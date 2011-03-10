@@ -165,6 +165,25 @@ class SteamId
       @friends << SteamId.new(friend.text.to_i, false)
     end
   end
+  
+  # Fetchs the app ids of the games the user owns
+  def fetch_games_app_id
+    url = "#{base_url}/games?xml=1"
+    
+    @games_app_id = {}
+    games_data = REXML::Document.new(open(url, {:proxy => true}).read).root
+     games_data.elements.each('games/game') do |game|
+       game_name = game.elements['name'].text
+       if game.elements['appID'].nil?
+         @games_app_id[game_name] = nil
+       else
+         app_id = game.elements['appID'].text.match(/(\d+)/)[1]
+         @games_app_id[game_name] = app_id.to_i
+       end
+     end
+
+     true
+  end
 
   # Fetches the games this user owns
   def fetch_games
@@ -209,7 +228,17 @@ class SteamId
     fetch_friends if @friends.nil?
     @friends
   end
-
+  
+  # Returns a Hash with the games this user owns. The keys are the games' names
+  # and the values are the app_id of the game if it exists, otherwise +nil+.
+  # This method is suplemental to the regular games method, mainly because
+  # that method doesn't return the app_id...
+  def games_app_id
+    fetch_games_app_id if @games_app_id.nil?
+    nil
+    # @games_app_id
+  end
+  
   # Returns a Hash with the games this user owns. The keys are the games' names
   # and the values are the "friendly names" used for stats or +false+ if the
   # games has no stats.
