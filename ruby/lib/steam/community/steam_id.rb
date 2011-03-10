@@ -178,7 +178,9 @@ class SteamId
          @games_app_id[game_name] = nil
        else
          app_id = game.elements['appID'].text.match(/(\d+)/)[1]
-         @games_app_id[game_name] = app_id.to_i
+         # the app_id is going to be a string, but that's fine...
+         # i think it's safer to do it that way.
+         @games_app_id[game_name] = app_id
        end
      end
 
