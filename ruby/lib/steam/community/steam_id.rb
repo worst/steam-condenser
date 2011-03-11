@@ -237,7 +237,7 @@ class SteamId
   # that method doesn't return the app_id...
   def games_app_id
     fetch_games_app_id if @games_app_id.nil?
-    nil
+    @games_app_id
     # @games_app_id
   end
   
